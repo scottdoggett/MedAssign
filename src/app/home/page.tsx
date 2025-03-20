@@ -36,7 +36,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center space-y-4 w-2/3 ">
             <Link href="/schedule">
               <button className="py-4 w-[20vw] bg-blue-600 text-white rounded-xl text-2xl font-semibold hover:bg-blue-950 transition">
-                Generate Schedule
+                View Schedule
               </button>
             </Link>
             <Link href="/staff">

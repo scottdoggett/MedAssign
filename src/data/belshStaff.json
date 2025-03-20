@@ -1,0 +1,520 @@
+{
+    "parameters": {
+        "Total Staff": 16,
+        "shifts": [
+            "M",
+            "A",
+            "N"
+        ],
+        "days": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+        ]
+    },
+    "staff": [
+        {
+            "ID": 1,
+            "Name": "Staff 1",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 2,
+                        "shift": "A",
+                        "weight": 19
+                    },
+                    {
+                        "day": 5,
+                        "shift": "M",
+                        "weight": 12
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 14,
+                        "weight": 38
+                    },
+                    {
+                        "day": 6,
+                        "weight": 34
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 2,
+            "Name": "Staff 2",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 3,
+                        "shift": "N",
+                        "weight": 26
+                    },
+                    {
+                        "day": 8,
+                        "shift": "A",
+                        "weight": 8
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 5,
+                        "weight": 15
+                    },
+                    {
+                        "day": 7,
+                        "weight": 31
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 3,
+            "Name": "Staff 3",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 14,
+                        "shift": "N",
+                        "weight": 5
+                    },
+                    {
+                        "day": 11,
+                        "shift": "M",
+                        "weight": 7
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 12,
+                        "weight": 9
+                    },
+                    {
+                        "day": 10,
+                        "weight": 7
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 4,
+            "Name": "Staff 4",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 3,
+                        "shift": "N",
+                        "weight": 2
+                    },
+                    {
+                        "day": 12,
+                        "shift": "A",
+                        "weight": 47
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 9,
+                        "weight": 35
+                    },
+                    {
+                        "day": 8,
+                        "weight": 28
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 5,
+            "Name": "Staff 5",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 2,
+                        "shift": "N",
+                        "weight": 22
+                    },
+                    {
+                        "day": 8,
+                        "shift": "M",
+                        "weight": 12
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 5,
+                        "weight": 25
+                    },
+                    {
+                        "day": 4,
+                        "weight": 12
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 6,
+            "Name": "Staff 6",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 14,
+                        "shift": "M",
+                        "weight": 41
+                    },
+                    {
+                        "day": 13,
+                        "shift": "N",
+                        "weight": 28
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 10,
+                        "weight": 24
+                    },
+                    {
+                        "day": 7,
+                        "weight": 20
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 7,
+            "Name": "Staff 7",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 8,
+                        "shift": "A",
+                        "weight": 8
+                    },
+                    {
+                        "day": 6,
+                        "shift": "M",
+                        "weight": 17
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 3,
+                        "weight": 48
+                    },
+                    {
+                        "day": 1,
+                        "weight": 22
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 8,
+            "Name": "Staff 8",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 4,
+                        "shift": "M",
+                        "weight": 17
+                    },
+                    {
+                        "day": 13,
+                        "shift": "A",
+                        "weight": 49
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 7,
+                        "weight": 25
+                    },
+                    {
+                        "day": 5,
+                        "weight": 40
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 9,
+            "Name": "Staff 9",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 3,
+                        "shift": "A",
+                        "weight": 33
+                    },
+                    {
+                        "day": 12,
+                        "shift": "A",
+                        "weight": 29
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 13,
+                        "weight": 12
+                    },
+                    {
+                        "day": 11,
+                        "weight": 30
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 10,
+            "Name": "Staff 10",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 2,
+                        "shift": "M",
+                        "weight": 45
+                    },
+                    {
+                        "day": 4,
+                        "shift": "N",
+                        "weight": 31
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 5,
+                        "weight": 14
+                    },
+                    {
+                        "day": 8,
+                        "weight": 47
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 11,
+            "Name": "Staff 11",
+            "Seniority": "senior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 3,
+                        "shift": "N",
+                        "weight": 50
+                    },
+                    {
+                        "day": 2,
+                        "shift": "A",
+                        "weight": 28
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 14,
+                        "weight": 14
+                    },
+                    {
+                        "day": 6,
+                        "weight": 45
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 12,
+            "Name": "Staff 12",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 13,
+                        "shift": "N",
+                        "weight": 9
+                    },
+                    {
+                        "day": 3,
+                        "shift": "M",
+                        "weight": 43
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 12,
+                        "weight": 48
+                    },
+                    {
+                        "day": 14,
+                        "weight": 12
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 13,
+            "Name": "Staff 13",
+            "Seniority": "senior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 10,
+                        "shift": "A",
+                        "weight": 27
+                    },
+                    {
+                        "day": 1,
+                        "shift": "N",
+                        "weight": 12
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 13,
+                        "weight": 18
+                    },
+                    {
+                        "day": 6,
+                        "weight": 27
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 14,
+            "Name": "Staff 14",
+            "Seniority": "senior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 5,
+                        "shift": "N",
+                        "weight": 14
+                    },
+                    {
+                        "day": 12,
+                        "shift": "M",
+                        "weight": 9
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 9,
+                        "weight": 23
+                    },
+                    {
+                        "day": 7,
+                        "weight": 39
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 15,
+            "Name": "Staff 15",
+            "Seniority": "senior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 7,
+                        "shift": "N",
+                        "weight": 50
+                    },
+                    {
+                        "day": 1,
+                        "shift": "M",
+                        "weight": 48
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 4,
+                        "weight": 38
+                    },
+                    {
+                        "day": 10,
+                        "weight": 27
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 16,
+            "Name": "Staff 16",
+            "Seniority": "junior",
+            "Preferences": {
+                "preferred_shifts": [
+                    {
+                        "day": 1,
+                        "shift": "A",
+                        "weight": 8
+                    },
+                    {
+                        "day": 8,
+                        "shift": "N",
+                        "weight": 43
+                    }
+                ],
+                "preferred_days_off": [
+                    {
+                        "day": 2,
+                        "weight": 8
+                    },
+                    {
+                        "day": 3,
+                        "weight": 19
+                    }
+                ]
+            }
+        }
+    ],
+    "objective weights": {
+        "obj_fairness": 1,
+        "obj_shift_preferences": 1,
+        "obj_dayOff_preferences": 1,
+        "obj_weekend_balance": 1,
+        "obj_consecutive_workday": 1
+    },
+    "Rst": 3,
+    "Mi": 6,
+    "Li": 3,
+    "B": [
+        0,
+        0,
+        0,
+        0,
+        10,
+        50,
+        100,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000,
+        1000000
+    ],
+    "lambda": 0.5
+}

@@ -1,0 +1,698 @@
+{
+  "parameters": {
+    "Total Staff": 16,
+    "shifts": [
+      "M",
+      "A",
+      "N"
+    ],
+    "days": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ]
+  },
+  "staff": [
+    {
+      "ID": 1,
+      "Name": "Andria Goia",
+      "Seniority": "senior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 2,
+            "shift": "M",
+            "weight": 25
+          },
+          {
+            "day": 5,
+            "shift": "M",
+            "weight": 10
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 1,
+            "weight": 25
+          },
+          {
+            "day": 6,
+            "weight": 10
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "1 AM - 7 AM",
+        "2025-03-21": "1 AM - 7 AM",
+        "2025-03-24": "7 AM - 3 PM",
+        "2025-03-25": "1 AM - 7 AM",
+        "2025-03-27": "7 AM - 3 PM",
+        "2025-03-29": "3 PM - 1 AM",
+        "2025-03-30": "7 AM - 3 PM",
+        "2025-03-31": "1 AM - 7 AM",
+        "2025-04-02": "1 AM - 7 AM"
+      }
+    },
+    {
+      "ID": 2,
+      "Name": "Jennifer Muller",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 3,
+            "shift": "N",
+            "weight": 25
+          },
+          {
+            "day": 8,
+            "shift": "A",
+            "weight": 10
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 5,
+            "weight": 10
+          },
+          {
+            "day": 7,
+            "weight": 40
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "1 AM - 7 AM",
+        "2025-03-21": "3 PM - 1 AM",
+        "2025-03-22": "1 AM - 7 AM",
+        "2025-03-24": "7 AM - 3 PM",
+        "2025-03-25": "3 PM - 1 AM",
+        "2025-03-26": "3 PM - 1 AM",
+        "2025-03-28": "3 PM - 1 AM",
+        "2025-03-31": "7 AM - 3 PM",
+        "2025-04-01": "1 AM - 7 AM"
+      }
+    },
+    {
+      "ID": 3,
+      "Name": "Rachel Lorence",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 14,
+            "shift": "N",
+            "weight": 10
+          },
+          {
+            "day": 11,
+            "shift": "M",
+            "weight": 10
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 12,
+            "weight": 10
+          },
+          {
+            "day": 10,
+            "weight": 10
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "3 PM - 1 AM",
+        "2025-03-22": "7 AM - 3 PM",
+        "2025-03-23": "3 PM - 1 AM",
+        "2025-03-26": "7 AM - 3 PM",
+        "2025-03-27": "1 AM - 7 AM",
+        "2025-03-29": "7 AM - 3 PM",
+        "2025-03-31": "1 AM - 7 AM",
+        "2025-04-01": "3 PM - 1 AM",
+        "2025-04-02": "1 AM - 7 AM"
+      }
+    },
+    {
+      "ID": 4,
+      "Name": "Dwayne Stevens",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 3,
+            "shift": "N",
+            "weight": 10
+          },
+          {
+            "day": 12,
+            "shift": "A",
+            "weight": 40
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 9,
+            "weight": 40
+          },
+          {
+            "day": 8,
+            "weight": 25
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "1 AM - 7 AM",
+        "2025-03-21": "1 AM - 7 AM",
+        "2025-03-25": "3 PM - 1 AM",
+        "2025-03-27": "7 AM - 3 PM",
+        "2025-03-28": "1 AM - 7 AM",
+        "2025-03-30": "3 PM - 1 AM",
+        "2025-03-31": "3 PM - 1 AM",
+        "2025-04-01": "7 AM - 3 PM"
+      }
+    },
+    {
+      "ID": 5,
+      "Name": "Mark Stewart",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 2,
+            "shift": "N",
+            "weight": 25
+          },
+          {
+            "day": 8,
+            "shift": "M",
+            "weight": 10
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 5,
+            "weight": 25
+          },
+          {
+            "day": 4,
+            "weight": 10
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-21": "1 AM - 7 AM",
+        "2025-03-23": "7 AM - 3 PM",
+        "2025-03-24": "7 AM - 3 PM",
+        "2025-03-26": "3 PM - 1 AM",
+        "2025-03-27": "7 AM - 3 PM",
+        "2025-03-29": "1 AM - 7 AM",
+        "2025-03-31": "7 AM - 3 PM",
+        "2025-04-01": "7 AM - 3 PM",
+        "2025-04-02": "7 AM - 3 PM"
+      }
+    },
+    {
+      "ID": 6,
+      "Name": "Carmen Rodriguez",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 14,
+            "shift": "M",
+            "weight": 40
+          },
+          {
+            "day": 13,
+            "shift": "N",
+            "weight": 25
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 10,
+            "weight": 25
+          },
+          {
+            "day": 7,
+            "weight": 10
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "7 AM - 3 PM",
+        "2025-03-21": "7 AM - 3 PM",
+        "2025-03-22": "3 PM - 1 AM",
+        "2025-03-24": "1 AM - 7 AM",
+        "2025-03-27": "3 PM - 1 AM",
+        "2025-03-28": "1 AM - 7 AM",
+        "2025-03-30": "7 AM - 3 PM",
+        "2025-03-31": "1 AM - 7 AM",
+        "2025-04-02": "7 AM - 3 PM"
+      }
+    },
+    {
+      "ID": 7,
+      "Name": "Sharon Neville",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 8,
+            "shift": "A",
+            "weight": 10
+          },
+          {
+            "day": 6,
+            "shift": "M",
+            "weight": 25
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 3,
+            "weight": 40
+          },
+          {
+            "day": 1,
+            "weight": 10
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-22": "3 PM - 1 AM",
+        "2025-03-23": "7 AM - 3 PM",
+        "2025-03-24": "3 PM - 1 AM",
+        "2025-03-26": "7 AM - 3 PM",
+        "2025-03-27": "3 PM - 1 AM",
+        "2025-03-29": "3 PM - 1 AM",
+        "2025-03-30": "7 AM - 3 PM",
+        "2025-04-01": "1 AM - 7 AM"
+      }
+    },
+    {
+      "ID": 8,
+      "Name": "David Young",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 4,
+            "shift": "M",
+            "weight": 25
+          },
+          {
+            "day": 13,
+            "shift": "A",
+            "weight": 40
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 7,
+            "weight": 25
+          },
+          {
+            "day": 5,
+            "weight": 40
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-21": "3 PM - 1 AM",
+        "2025-03-22": "7 AM - 3 PM",
+        "2025-03-23": "7 AM - 3 PM",
+        "2025-03-25": "1 AM - 7 AM",
+        "2025-03-26": "1 AM - 7 AM",
+        "2025-03-29": "7 AM - 3 PM",
+        "2025-03-30": "3 PM - 1 AM",
+        "2025-03-31": "7 AM - 3 PM",
+        "2025-04-01": "3 PM - 1 AM",
+        "2025-04-02": "3 PM - 1 AM"
+      }
+    },
+    {
+      "ID": 9,
+      "Name": "Emily Carter",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 3,
+            "shift": "A",
+            "weight": 10
+          },
+          {
+            "day": 12,
+            "shift": "A",
+            "weight": 40
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 13,
+            "weight": 10
+          },
+          {
+            "day": 11,
+            "weight": 25
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "7 AM - 3 PM",
+        "2025-03-22": "3 PM - 1 AM",
+        "2025-03-23": "1 AM - 7 AM",
+        "2025-03-25": "7 AM - 3 PM",
+        "2025-03-28": "7 AM - 3 PM",
+        "2025-03-29": "3 PM - 1 AM",
+        "2025-03-30": "1 AM - 7 AM",
+        "2025-04-01": "3 PM - 1 AM",
+        "2025-04-02": "7 AM - 3 PM"
+      }
+    },
+    {
+      "ID": 10,
+      "Name": "Liam O'Connell",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 2,
+            "shift": "M",
+            "weight": 40
+          },
+          {
+            "day": 4,
+            "shift": "N",
+            "weight": 25
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 5,
+            "weight": 10
+          },
+          {
+            "day": 8,
+            "weight": 40
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-21": "7 AM - 3 PM",
+        "2025-03-22": "7 AM - 3 PM",
+        "2025-03-23": "1 AM - 7 AM",
+        "2025-03-25": "7 AM - 3 PM",
+        "2025-03-26": "7 AM - 3 PM",
+        "2025-03-27": "1 AM - 7 AM",
+        "2025-03-29": "1 AM - 7 AM",
+        "2025-03-30": "3 PM - 1 AM",
+        "2025-04-02": "3 PM - 1 AM"
+      }
+    },
+    {
+      "ID": 11,
+      "Name": "Sophia Ramirez",
+      "Seniority": "senior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 3,
+            "shift": "N",
+            "weight": 40
+          },
+          {
+            "day": 2,
+            "shift": "A",
+            "weight": 25
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 14,
+            "weight": 10
+          },
+          {
+            "day": 6,
+            "weight": 40
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "7 AM - 3 PM",
+        "2025-03-21": "3 PM - 1 AM",
+        "2025-03-22": "1 AM - 7 AM",
+        "2025-03-23": "3 PM - 1 AM",
+        "2025-03-25": "7 AM - 3 PM",
+        "2025-03-26": "7 AM - 3 PM",
+        "2025-03-27": "3 PM - 1 AM",
+        "2025-03-29": "7 AM - 3 PM",
+        "2025-03-30": "3 PM - 1 AM",
+        "2025-04-01": "7 AM - 3 PM"
+      }
+    },
+    {
+      "ID": 12,
+      "Name": "Ethan Carter",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 13,
+            "shift": "N",
+            "weight": 25
+          },
+          {
+            "day": 3,
+            "shift": "M",
+            "weight": 10
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 12,
+            "weight": 40
+          },
+          {
+            "day": 14,
+            "weight": 10
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "3 PM - 1 AM",
+        "2025-03-21": "7 AM - 3 PM",
+        "2025-03-23": "3 PM - 1 AM",
+        "2025-03-24": "3 PM - 1 AM",
+        "2025-03-25": "1 AM - 7 AM",
+        "2025-03-27": "3 PM - 1 AM",
+        "2025-03-28": "3 PM - 1 AM",
+        "2025-03-30": "1 AM - 7 AM",
+        "2025-04-01": "1 AM - 7 AM"
+      }
+    },
+    {
+      "ID": 13,
+      "Name": "Olivia Roux",
+      "Seniority": "senior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 10,
+            "shift": "A",
+            "weight": 25
+          },
+          {
+            "day": 1,
+            "shift": "N",
+            "weight": 10
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 13,
+            "weight": 25
+          },
+          {
+            "day": 6,
+            "weight": 25
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-21": "7 AM - 3 PM",
+        "2025-03-22": "7 AM - 3 PM",
+        "2025-03-24": "1 AM - 7 AM",
+        "2025-03-27": "1 AM - 7 AM",
+        "2025-03-28": "3 PM - 1 AM",
+        "2025-03-29": "1 AM - 7 AM",
+        "2025-03-31": "7 AM - 3 PM",
+        "2025-04-01": "1 AM - 7 AM",
+        "2025-04-02": "1 AM - 7 AM"
+      }
+    },
+    {
+      "ID": 14,
+      "Name": "Noah White",
+      "Seniority": "senior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 5,
+            "shift": "N",
+            "weight": 10
+          },
+          {
+            "day": 12,
+            "shift": "M",
+            "weight": 10
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 9,
+            "weight": 25
+          },
+          {
+            "day": 7,
+            "weight": 40
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-21": "7 AM - 3 PM",
+        "2025-03-22": "3 PM - 1 AM",
+        "2025-03-23": "7 AM - 3 PM",
+        "2025-03-24": "3 PM - 1 AM",
+        "2025-03-25": "3 PM - 1 AM",
+        "2025-03-26": "1 AM - 7 AM",
+        "2025-03-28": "1 AM - 7 AM",
+        "2025-03-30": "1 AM - 7 AM",
+        "2025-03-31": "3 PM - 1 AM",
+        "2025-04-02": "7 AM - 3 PM"
+      }
+    },
+    {
+      "ID": 15,
+      "Name": "Isabella Dubois",
+      "Seniority": "senior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 7,
+            "shift": "N",
+            "weight": 40
+          },
+          {
+            "day": 1,
+            "shift": "M",
+            "weight": 25
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 4,
+            "weight": 10
+          },
+          {
+            "day": 10,
+            "weight": 25
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "3 PM - 1 AM",
+        "2025-03-21": "3 PM - 1 AM",
+        "2025-03-23": "1 AM - 7 AM",
+        "2025-03-24": "3 PM - 1 AM",
+        "2025-03-25": "1 AM - 7 AM",
+        "2025-03-26": "3 PM - 1 AM",
+        "2025-03-28": "7 AM - 3 PM",
+        "2025-03-31": "3 PM - 1 AM",
+        "2025-04-01": "3 PM - 1 AM",
+        "2025-04-02": "3 PM - 1 AM"
+      }
+    },
+    {
+      "ID": 16,
+      "Name": "Jackson Kim",
+      "Seniority": "junior",
+      "Preferences": {
+        "preferred_shifts": [
+          {
+            "day": 1,
+            "shift": "A",
+            "weight": 10
+          },
+          {
+            "day": 8,
+            "shift": "N",
+            "weight": 40
+          }
+        ],
+        "preferred_days_off": [
+          {
+            "day": 2,
+            "weight": 10
+          },
+          {
+            "day": 3,
+            "weight": 25
+          }
+        ]
+      },
+      "schedule": {
+        "2025-03-20": "3 PM - 1 AM",
+        "2025-03-21": "3 PM - 1 AM",
+        "2025-03-22": "1 AM - 7 AM",
+        "2025-03-24": "1 AM - 7 AM",
+        "2025-03-26": "1 AM - 7 AM",
+        "2025-03-28": "7 AM - 3 PM",
+        "2025-03-29": "7 AM - 3 PM",
+        "2025-03-31": "3 PM - 1 AM",
+        "2025-04-02": "1 AM - 7 AM"
+      }
+    }
+  ],
+  "objective weights": {
+    "obj_fairness": 1,
+    "obj_shift_preferences": 1,
+    "obj_dayOff_preferences": 1,
+    "obj_weekend_balance": 1,
+    "obj_consecutive_workday": 1
+  },
+  "Rst": 3,
+  "Mi": 6,
+  "Li": 3,
+  "B": [
+    0,
+    0,
+    0,
+    0,
+    10,
+    50,
+    100,
+    1000000,
+    1000000,
+    1000000,
+    1000000,
+    1000000,
+    1000000,
+    1000000,
+    1000000
+  ],
+  "lambda": 0.5
+}

@@ -1,23 +1,13 @@
 "use client";
-import { useStaff } from "@/app/context/StaffContext";
+
+import { useStaff, StaffMember } from "@/context/StaffContext";
 import { DialogTitle } from "@/components/ui/dialog"; // ✅ Import DialogTitle
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useState, useEffect } from "react";
-import { StaffMember } from "@/data/staffData"; // ✅ Fix: Import StaffMember type
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox"; // Ensure Checkbox is imported
-import { Separator } from "@/components/ui/separator";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import EditableAvatar from "@/components/ui/EditableAvatar"; // ✅ Import EditableAvatar
+import { Trash2, Plus } from "lucide-react"; // Import the trash icon
 import {
   Select,
   SelectContent,
@@ -43,7 +33,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import DateNavigation from "@/components/ui/DateNavigation";
-import { format, addDays, startOfWeek } from "date-fns";
+import { format, addDays, differenceInDays, startOfWeek } from "date-fns";
 import {
   Popover,
   PopoverTrigger,
@@ -52,11 +42,18 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 
 export default function StaffPage() {
-  const { staffData, updateStaffMember } = useStaff();
+  const [editedShiftDate, setEditedShiftDate] = useState<Date | undefined>();
+
+  const [newDayOffDate, setNewDayOffDate] = useState<Date | undefined>();
+  const [newDayOffWeight, setNewDayOffWeight] = useState<number>(10);
+  const [newShift, setNewShift] = useState<string | null>(null);
+  const [newWeight, setNewWeight] = useState<number>(10); // Default to "Low"
+  const [newShiftDate, setNewShiftDate] = useState<Date | undefined>();
+
+  const { staffData, setStaffData } = useStaff();
 
   const [seniorityFilter, setSeniorityFilter] = useState<string>("All");
   const [shiftFilter, setShiftFilter] = useState<string>("All");
-  const [dayOffFilter, setDayOffFilter] = useState<string>("All");
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // ✅ Start at today
 
@@ -82,266 +79,179 @@ export default function StaffPage() {
 
   const [selectedMember, setSelectedMember] = useState<StaffMember | null>(
     null
-  ); // ✅ Fix: Add state
+  );
 
-  const handleSaveChanges = (updatedMember: StaffMember) => {
-    if (updateStaffMember) {
-      updateStaffMember(updatedMember);
-      setSelectedMember(null);
+  const updateStaffSeniority = async (
+    memberID: number,
+    newSeniority: "junior" | "senior"
+  ) => {
+    // ✅ Create an updated staff list
+    const updatedStaff = staffData.map((staff) =>
+      staff.ID === memberID
+        ? { ...staff, Seniority: newSeniority } // ✅ Only update Seniority
+        : staff
+    );
 
-      // ✅ Ensure scrolling is always restored after edit
-      setTimeout(() => {
-        document.body.style.overflow = "";
-      }, 50);
-    } else {
-      console.error("updateStaffMember is undefined");
+    // ✅ Update UI immediately
+    setStaffData(updatedStaff);
+
+    // ✅ Send full updated staff list to persist changes
+    try {
+      const response = await fetch("/api/updateStaff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save staff seniority.");
+      }
+    } catch (error) {
+      console.error("Error updating staff seniority:", error);
     }
   };
 
-  function EditStaffForm({
-    member,
-    onSave,
-    onCancel,
-  }: {
-    member: StaffMember;
-    onSave: (updatedMember: StaffMember) => void;
-    onCancel: () => void;
-  }) {
-    const [formData, setFormData] = useState({ ...member });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    return (
-      <div className="p-6">
-        <h2 className="text-2xl font-semibold mb-4">Edit {member.name}</h2>
-
-        {/* Grid Layout for Form Sections */}
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-6">
-          {/* Left Section - Name, Seniority, Preferred Days Off */}
-          <div className="space-y-4">
-            {/* Name Input */}
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Seniority Input */}
-            <div>
-              <Label htmlFor="seniority">Seniority</Label>
-              <Select
-                value={formData.seniority}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    seniority: value as "Senior" | "Junior",
-                  }))
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Seniority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Junior">Junior</SelectItem>
-                  <SelectItem value="Senior">Senior</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Preferred Days Off Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Preferred Days Off</h3>
-              <div className="grid grid-cols-7 gap-2">
-                {[
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                  "Saturday",
-                  "Sunday",
-                ].map((day) => (
-                  <div key={day} className="flex flex-col">
-                    <span className="text-sm font-medium">{day}</span>
-                    <Select
-                      key={day}
-                      value={String(formData.daysOffPreferences[day] || 0)}
-                      onValueChange={(value) => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          daysOffPreferences: {
-                            ...prev.daysOffPreferences,
-                            [day]: Number(value),
-                          },
-                        }));
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Priority">
-                          {
-                            formData.daysOffPreferences[day] === 1
-                              ? "Low"
-                              : formData.daysOffPreferences[day] === 2
-                              ? "Med"
-                              : formData.daysOffPreferences[day] === 3
-                              ? "High"
-                              : "" // If None (0), show empty text
-                          }
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Priority Level</SelectLabel>
-                          <SelectItem value="0">None</SelectItem>{" "}
-                          {/* Selecting this makes the select appear empty */}
-                          <SelectItem value="1">Low</SelectItem>
-                          <SelectItem value="2">Medium</SelectItem>
-                          <SelectItem value="3">High</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="w-px bg-gray-300 mx-6"></div>
-
-          {/* Right Section - Preferred Shifts (3x7 Grid) */}
-          {/* Preferred Shifts Section */}
-          {/* Preferred Shifts Section */}
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Preferred Shifts</h3>
-            <div className="grid grid-cols-8 gap-2 items-center">
-              {/* Empty space for shift labels */}
-              <div></div>
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                (shortDay) => (
-                  <span
-                    key={shortDay}
-                    className="text-sm font-semibold text-center"
-                  >
-                    {shortDay}
-                  </span>
-                )
-              )}
-
-              {/* Shift Labels + Shift Select Inputs */}
-              {["7 AM - 3 PM", "3 PM - 1 AM", "1 AM - 7 AM"].map(
-                (shift, shiftIndex) => (
-                  <React.Fragment key={shift}>
-                    {/* Left-side shift label */}
-                    <span className="text-sm font-medium">
-                      {shift === "7 AM - 3 PM"
-                        ? "Morning"
-                        : shift === "3 PM - 1 AM"
-                        ? "Afternoon"
-                        : "Evening"}
-                    </span>
-
-                    {/* Shift Priority Selects */}
-                    {[
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ].map((day) => {
-                      const dayShifts = formData.preferredShifts[day] || {
-                        "7 AM - 3 PM": 0,
-                        "3 PM - 1 AM": 0,
-                        "1 AM - 7 AM": 0,
-                      };
-
-                      return (
-                        <Select
-                          key={`${day}-${shift}`}
-                          value={String(
-                            dayShifts[shift as keyof typeof dayShifts] || 0
-                          )}
-                          onValueChange={(value) => {
-                            setFormData((prev) => ({
-                              ...prev,
-                              preferredShifts: {
-                                ...prev.preferredShifts,
-                                [day]: {
-                                  ...prev.preferredShifts[day],
-                                  [shift as keyof typeof dayShifts]:
-                                    Number(value),
-                                },
-                              },
-                            }));
-                          }}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Preference Amount">
-                              {
-                                dayShifts[shift as keyof typeof dayShifts] === 1
-                                  ? "Low"
-                                  : dayShifts[
-                                      shift as keyof typeof dayShifts
-                                    ] === 2
-                                  ? "Med"
-                                  : dayShifts[
-                                      shift as keyof typeof dayShifts
-                                    ] === 3
-                                  ? "High"
-                                  : "" // Show empty if None (0)
-                              }
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Preference Amount</SelectLabel>
-                              <SelectItem value="0">None</SelectItem>{" "}
-                              {/* Makes select appear empty */}
-                              <SelectItem value="1">Low</SelectItem>
-                              <SelectItem value="2">Medium</SelectItem>
-                              <SelectItem value="3">High</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      );
-                    })}
-                  </React.Fragment>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer Buttons (Save & Cancel) */}
-        <div className="flex flex-col gap-2 mt-6 items-center">
-          <Button
-            className="w-[20vw]"
-            onClick={() => {
-              onSave(formData);
-              document.dispatchEvent(
-                new KeyboardEvent("keydown", { key: "Escape" })
-              ); // 🔥 Fully close the drawer
-            }}
-          >
-            Submit
-          </Button>
-
-          <DrawerClose asChild>
-            <Button variant="outline" className="w-[20vw]" onClick={onCancel}>
-              Cancel
-            </Button>
-          </DrawerClose>
-        </div>
-      </div>
+  const updateStaffName = async (memberID: number, newName: string) => {
+    // Create an updated staff list with the new name
+    const updatedStaff = staffData.map((staff) =>
+      staff.ID === memberID
+        ? { ...staff, Name: newName } // ✅ Only update the Name field
+        : staff
     );
-  }
+
+    // Update UI immediately
+    setStaffData(updatedStaff);
+
+    // Send the full updated staff list to persist changes
+    try {
+      const response = await fetch("/api/updateStaff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save staff name.");
+      }
+    } catch (error) {
+      console.error("Error updating staff name:", error);
+    }
+  };
+
+  const updatePreferredShift = async (
+    memberID: number,
+    updatedShifts: { day: number; shift: string; weight: number }[]
+  ) => {
+    // Create an updated staff list
+    const updatedStaff = staffData.map((staff) =>
+      staff.ID === memberID
+        ? {
+            ...staff,
+            Preferences: {
+              ...staff.Preferences,
+              preferred_shifts: updatedShifts, // ✅ Correctly update only this member's preferred shifts
+            },
+          }
+        : staff
+    );
+
+    // Update UI immediately
+    setStaffData(updatedStaff);
+
+    // Send the full updated staff list to persist changes
+    try {
+      const response = await fetch("/api/updateStaff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save preferred shifts.");
+      }
+    } catch (error) {
+      console.error("Error updating preferred shifts:", error);
+    }
+  };
+
+  const updatePreferredDayOff = async (
+    memberID: number,
+    updatedDaysOff: { day: number; weight: number }[]
+  ) => {
+    // Create an updated staff list
+    const updatedStaff = staffData.map((staff) =>
+      staff.ID === memberID
+        ? {
+            ...staff,
+            Preferences: {
+              ...staff.Preferences,
+              preferred_days_off: updatedDaysOff, // ✅ Correctly update only this member's preferences
+            },
+          }
+        : staff
+    );
+
+    // Update UI immediately
+    setStaffData(updatedStaff);
+
+    // Send full staff list to API to persist changes
+    try {
+      const response = await fetch("/api/updateStaff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save preferred days off.");
+      }
+    } catch (error) {
+      console.error("Error updating preferred days off:", error);
+    }
+  };
+
+  const updateStaffMember = async (updatedMember: StaffMember) => {
+    // Update state immediately for UI responsiveness
+    setStaffData((prevStaff) =>
+      prevStaff.map((staff) =>
+        staff.ID === updatedMember.ID ? updatedMember : staff
+      )
+    );
+
+    // Send updated member to backend to save in JSON
+    try {
+      const response = await fetch("/api/updateStaff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedMember),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save staff data.");
+      }
+    } catch (error) {
+      console.error("Error updating staff data:", error);
+    }
+  };
+
+  const handleSaveChanges = (updatedMember: StaffMember) => {
+    setStaffData((prevStaff) =>
+      prevStaff.map((staff) =>
+        staff.ID === updatedMember.ID ? updatedMember : staff
+      )
+    );
+    setSelectedMember(null);
+  };
 
   return (
     <div className="p-6 max-w-[1000px] mx-auto">
@@ -353,13 +263,16 @@ export default function StaffPage() {
           <Select value={seniorityFilter} onValueChange={setSeniorityFilter}>
             <SelectTrigger className="w-fit">
               <SelectValue placeholder="Seniority">
-                {seniorityFilter === "All" ? "Seniority" : seniorityFilter}
+                {seniorityFilter === "All"
+                  ? "Seniority"
+                  : seniorityFilter.charAt(0).toUpperCase() +
+                    seniorityFilter.slice(1)}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All</SelectItem>
-              <SelectItem value="Junior">Junior</SelectItem>
-              <SelectItem value="Senior">Senior</SelectItem>
+              <SelectItem value="junior">Junior</SelectItem>
+              <SelectItem value="senior">Senior</SelectItem>
             </SelectContent>
           </Select>
 
@@ -369,7 +282,7 @@ export default function StaffPage() {
               <Button variant="outline" className="w-fit">
                 {shiftFilter === "All"
                   ? "Shift Date"
-                  : format(new Date(shiftFilter + "T00:00:00"), "EEE, MMM d")}
+                  : format(new Date(shiftFilter), "EEE, MMM d")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0">
@@ -397,38 +310,12 @@ export default function StaffPage() {
             </PopoverContent>
           </Popover>
 
-          {/* Day Off Filter */}
-          <Select value={dayOffFilter} onValueChange={setDayOffFilter}>
-            <SelectTrigger className="w-fit">
-              <SelectValue placeholder="Preferred Day Off">
-                {dayOffFilter === "All" ? "Preferred Day Off" : dayOffFilter}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All</SelectItem>
-              {[
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-              ].map((day) => (
-                <SelectItem key={day} value={day}>
-                  {day}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
           {/* Reset Button */}
           <Button
             variant="destructive"
             onClick={() => {
               setSeniorityFilter("All");
               setShiftFilter("All");
-              setDayOffFilter("All");
             }}
           >
             Reset Filter
@@ -441,14 +328,14 @@ export default function StaffPage() {
           .map((member) => {
             // ✅ Fetch the most up-to-date member data
             const updatedMember =
-              staffData.find((m) => m.id === member.id) || member;
+              staffData.find((m) => m.ID === member.ID) || member;
             return updatedMember;
           })
           .filter((member) => {
             // ✅ Seniority Filter
             if (
               seniorityFilter !== "All" &&
-              member.seniority !== seniorityFilter
+              member.Seniority !== seniorityFilter
             )
               return false;
 
@@ -460,203 +347,577 @@ export default function StaffPage() {
             )
               return false;
 
-            // ✅ Preferred Days Off Filter - Ensures It Uses The Updated Data
-            if (dayOffFilter !== "All") {
-              const selectedDays = dayOffFilter.split(",");
-              const hasMatchingPreference = selectedDays.some(
-                (day) =>
-                  member.daysOffPreferences?.[day] &&
-                  member.daysOffPreferences[day] > 0 // ✅ Ensures updated data is used
-              );
-              if (!hasMatchingPreference) return false;
-            }
-
             return true;
           })
           .map((member: StaffMember) => {
-            const filteredDaysOff = Object.entries(
-              member.daysOffPreferences ?? {}
-            ).filter(([, priority]) => priority > 0);
-
-            const filteredShifts = Object.entries(
-              member.preferredShifts ?? {}
-            ).filter(([, shifts]) =>
-              Object.values(shifts).some((priority) => priority > 0)
-            );
+            const filteredDaysOff = member.Preferences.preferred_days_off
+              .filter((dayOff) => dayOff.weight > 0) // ✅ Only keep days with weight > 0
+              .map((dayOff) => ({
+                date: format(addDays(new Date(), dayOff.day), "yyyy-MM-dd"), // Convert day offset to real date
+                weight: dayOff.weight, // Keep weight value
+              }));
 
             return (
               <div
-                key={member.id}
+                key={member.ID}
                 className="p-6 border-2 rounded-lg shadow bg-white"
               >
                 {/* Top Section - Profile and Edit Button */}
                 <div className="flex justify-between items-start">
                   {/* Profile Picture & Info */}
                   <div className="flex items-center space-x-6">
-                    <Avatar className="w-32 h-32">
-                      <AvatarImage
-                        src={`/headshots/${member.id}.jpeg`}
-                        alt={member.name}
-                      />
-                      <AvatarFallback>{member.name[0]}</AvatarFallback>
-                    </Avatar>
+                    <EditableAvatar member={member} />
                     <div>
-                      <h2 className="text-4xl font-bold">{member.name}</h2>
-                      <p className="text-gray-600 text-xl">
-                        {member.seniority} Staff
-                      </p>
+                      <input
+                        type="text"
+                        className="text-4xl font-bold bg-transparent border-none outline-none"
+                        value={member.Name}
+                        onChange={(e) => {
+                          const newName = e.target.value;
+                          setStaffData((prevStaff) =>
+                            prevStaff.map((staff) =>
+                              staff.ID === member.ID
+                                ? { ...staff, Name: newName }
+                                : staff
+                            )
+                          );
+                        }}
+                        onBlur={(e) => {
+                          updateStaffName(member.ID, e.target.value); // ✅ Save to JSON on blur
+                        }}
+                      />
+                      <Select
+                        value={member.Seniority}
+                        onValueChange={(value) => {
+                          const newSeniority = value as "junior" | "senior"; // ✅ Explicitly cast value
+                          updateStaffSeniority(member.ID, newSeniority); // ✅ Update immediately
+                        }}
+                      >
+                        <SelectTrigger className="w-fit bg-transparent ml-[-12px] border-none shadow-none text-xl text-gray-500 focus:ring-0 focus:outline-none">
+                          <SelectValue placeholder="Select Seniority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="junior">Junior Staff</SelectItem>
+                          <SelectItem value="senior">Senior Staff</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-
-                  {/* Edit Button */}
-                  <Drawer
-                    onOpenChange={(open) =>
-                      (document.body.style.overflow = open ? "hidden" : "")
-                    }
-                  >
-                    <DrawerTrigger asChild>
-                      <button
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                        onClick={() => setSelectedMember(member)}
-                      >
-                        Edit Staff Info
-                      </button>
-                    </DrawerTrigger>
-                    <DrawerContent className="bg-white shadow-xl rounded-t-lg transition-transform duration-300">
-                      <div className="mx-auto max-w-[70vw]">
-                        <DrawerHeader>
-                          <DrawerTitle>Edit Staff Member</DrawerTitle>
-                          <DrawerDescription>
-                            Modify staff details below.
-                          </DrawerDescription>
-                        </DrawerHeader>
-                        {selectedMember && (
-                          <EditStaffForm
-                            member={selectedMember}
-                            onSave={(updatedMember) =>
-                              handleSaveChanges(updatedMember)
-                            }
-                            onCancel={() => setSelectedMember(null)}
-                          />
-                        )}
-                      </div>
-                    </DrawerContent>
-                  </Drawer>
                 </div>
 
                 {/* Preferred Shifts & Preferred Days Off Section */}
                 <div className="mt-6 flex justify-between">
-                  {/* Preferred Shifts */}
-                  {filteredShifts.length > 0 && (
-                    <div className="w-full">
-                      <h3 className="text-xl font-semibold mb-2">
-                        Preferred Shifts
-                      </h3>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Day</TableHead>
-                            <TableHead className="text-center">
-                              Morning
-                            </TableHead>
-                            <TableHead className="text-center">
-                              Afternoon
-                            </TableHead>
-                            <TableHead className="text-center">
-                              Evening
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {[
-                            "Monday",
-                            "Tuesday",
-                            "Wednesday",
-                            "Thursday",
-                            "Friday",
-                            "Saturday",
-                            "Sunday",
-                          ]
-                            .filter((day) => {
-                              const shifts = member.preferredShifts[day] || {
-                                "7 AM - 3 PM": 0,
-                                "3 PM - 1 AM": 0,
-                                "1 AM - 7 AM": 0,
-                              };
-                              return Object.values(shifts).some(
-                                (priority) => priority > 0
-                              );
-                            })
-                            .map((day) => {
-                              const shifts = member.preferredShifts[day] || {
-                                "7 AM - 3 PM": 0,
-                                "3 PM - 1 AM": 0,
-                                "1 AM - 7 AM": 0,
-                              };
-                              return (
-                                <TableRow key={day}>
-                                  <TableCell className="font-medium">
-                                    {day}
-                                  </TableCell>
-                                  {[
-                                    "7 AM - 3 PM",
-                                    "3 PM - 1 AM",
-                                    "1 AM - 7 AM",
-                                  ].map((shift) => {
-                                    const priority =
-                                      shifts[shift as keyof typeof shifts] || 0;
-                                    const label = getPriorityLabel(priority);
-                                    return (
-                                      <TableCell
-                                        key={shift}
-                                        className="text-center"
-                                      >
-                                        {label ? label : "-"}
-                                      </TableCell>
-                                    );
-                                  })}
-                                </TableRow>
-                              );
-                            })}
-                        </TableBody>
-                      </Table>
+                  {/* Preferred Shifts Section - More Visual Representation */}
+                  {/* Preferred Shifts - Uses Popovers */}
+                  {member.Preferences.preferred_shifts.length > 0 && (
+                    <div className="w-3/5 pr-4">
+                      <div className="flex items-center gap-2 justify-center mb-4">
+                        <h3 className="text-2xl font-semibold">
+                          Preferred Shifts
+                        </h3>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="p-1 bg-gray-400 text-white rounded-sm hover:bg-gray-500">
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="p-4 bg-white shadow-lg rounded-lg">
+                            <h4 className="text-lg font-semibold text-center mb-2">
+                              Add Preferred Shift
+                            </h4>
+
+                            {/* Shift Time Selector */}
+                            <Select
+                              value={newShift || ""}
+                              onValueChange={(value) => setNewShift(value)}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Shift Time" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="M">7 AM - 3 PM</SelectItem>
+                                <SelectItem value="A">3 PM - 1 AM</SelectItem>
+                                <SelectItem value="N">1 AM - 7 AM</SelectItem>
+                              </SelectContent>
+                            </Select>
+
+                            {/* Priority Selector */}
+                            <Select
+                              value={String(newWeight)}
+                              onValueChange={(value) =>
+                                setNewWeight(Number(value))
+                              }
+                            >
+                              <SelectTrigger className="w-full mt-2">
+                                <SelectValue placeholder="Select Priority" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="10">Low</SelectItem>
+                                <SelectItem value="25">Medium</SelectItem>
+                                <SelectItem value="40">High</SelectItem>
+                              </SelectContent>
+                            </Select>
+
+                            {/* Calendar */}
+                            <Calendar
+                              mode="single"
+                              selected={newShiftDate} // ✅ Store raw selected date
+                              onSelect={(date) => setNewShiftDate(date)} // ✅ No normalization
+                              className="mt-3 border rounded-md shadow-md"
+                            />
+
+                            {/* Save Button - Updates JSON only when clicked */}
+                            <button
+                              className="w-full mt-3 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              onClick={() => {
+                                if (!newShiftDate || !newShift) return;
+
+                                const today = new Date();
+                                const selectedDate = new Date(newShiftDate);
+
+                                // ✅ Calculate the day offset based on today
+                                const newDayOffset =
+                                  differenceInDays(selectedDate, today) + 1;
+
+                                // ✅ Save only when explicitly clicked
+                                const updatedShifts = [
+                                  ...member.Preferences.preferred_shifts,
+                                  {
+                                    day: newDayOffset,
+                                    shift: newShift,
+                                    weight: newWeight,
+                                  },
+                                ];
+
+                                updatePreferredShift(member.ID, updatedShifts); // ✅ Save to JSON
+                              }}
+                            >
+                              Add Shift Preference
+                            </button>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      <div className="flex flex-col space-y-3">
+                        {member.Preferences.preferred_shifts
+                          .filter((shift) => shift.weight > 0) // ✅ Only show shifts with priority
+                          .map((shift, index) => {
+                            const today = new Date();
+                            const shiftDate = new Date();
+                            shiftDate.setDate(today.getDate() + shift.day); // ✅ Convert "day" to real date
+
+                            // ✅ Convert shift value (M, A, N) into corresponding time
+                            const shiftTimes: Record<string, string> = {
+                              M: "7 AM - 3 PM",
+                              A: "3 PM - 1 AM",
+                              N: "1 AM - 7 AM",
+                            };
+
+                            const shiftTime =
+                              shiftTimes[shift.shift] || "Unknown Shift";
+
+                            // ✅ Categorize priority into Low, Medium, High
+                            let priorityLabel = "Low";
+                            let priorityBorder = "border-green-600"; // ✅ Strong border color
+                            let priorityBackground = "bg-green-50"; // ✅ Lighter background
+
+                            if (shift.weight > 33) {
+                              priorityLabel = "High";
+                              priorityBorder = "border-red-600";
+                              priorityBackground = "bg-red-50";
+                            } else if (shift.weight > 16) {
+                              priorityLabel = "Medium";
+                              priorityBorder = "border-orange-500";
+                              priorityBackground = "bg-orange-50";
+                            }
+
+                            return (
+                              <Popover key={index}>
+                                <PopoverTrigger asChild>
+                                  <button
+                                    className={`p-3 rounded-lg border-2 w-full flex items-center relative ${priorityBorder} ${priorityBackground}`}
+                                  >
+                                    {/* Date aligned to the left */}
+                                    <div className="text-left font-bold text-lg">
+                                      {format(shiftDate, "EEE, MMM d")}
+                                    </div>
+
+                                    {/* Shift Time - Set distance from the date */}
+                                    <div className="text-lg font-bold ml-16 text-center w-max">
+                                      {shiftTime}
+                                    </div>
+
+                                    {/* Priority stays aligned to the right */}
+                                    <div className="ml-auto pr-4 text-lg font-bold">
+                                      Priority: {priorityLabel}
+                                    </div>
+                                  </button>
+                                </PopoverTrigger>
+
+                                <PopoverContent className="p-4 bg-white shadow-lg rounded-lg">
+                                  <h4 className="text-lg font-semibold text-center mb-2">
+                                    Edit Preferred Shift
+                                  </h4>
+                                  {/* Shift Time Selector */}
+                                  <Select
+                                    value={shift.shift}
+                                    onValueChange={(value) => {
+                                      const updatedShifts =
+                                        member.Preferences.preferred_shifts.map(
+                                          (s, i) =>
+                                            i === index
+                                              ? { ...s, shift: value }
+                                              : s
+                                        );
+
+                                      updatePreferredShift(
+                                        member.ID,
+                                        updatedShifts
+                                      ); // ✅ Save to JSON
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select Shift" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                        <SelectLabel>Shift Time</SelectLabel>
+                                        <SelectItem value="M">
+                                          7 AM - 3 PM
+                                        </SelectItem>
+                                        <SelectItem value="A">
+                                          3 PM - 1 AM
+                                        </SelectItem>
+                                        <SelectItem value="N">
+                                          1 AM - 7 AM
+                                        </SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                  {/* Priority Selector */}
+                                  <Select
+                                    value={String(shift.weight)}
+                                    onValueChange={(value) => {
+                                      const updatedWeight = Number(value);
+                                      const updatedShifts =
+                                        member.Preferences.preferred_shifts.map(
+                                          (s, i) =>
+                                            i === index
+                                              ? { ...s, weight: updatedWeight }
+                                              : s
+                                        );
+
+                                      updatePreferredShift(
+                                        member.ID,
+                                        updatedShifts
+                                      ); // ✅ Save to JSON
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-full mt-2">
+                                      <SelectValue placeholder="Select Priority" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                        <SelectLabel>Priority</SelectLabel>
+                                        <SelectItem value="10">Low</SelectItem>
+                                        <SelectItem value="25">
+                                          Medium
+                                        </SelectItem>
+                                        <SelectItem value="40">High</SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                  {/* Calendar for Date Selection */}
+                                  {/* Calendar - Stores raw selected date */}
+                                  {/* Calendar for Date Selection */}
+                                  <Calendar
+                                    mode="single"
+                                    selected={editedShiftDate || shiftDate} // ✅ Default to existing shift date
+                                    onSelect={(date) =>
+                                      setEditedShiftDate(date)
+                                    } // ✅ No normalization, just store the selected date
+                                    className="mt-3 border rounded-md shadow-md"
+                                  />
+                                  {/* Save Button */}
+                                  <button
+                                    className="w-full mt-3 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                    onClick={() => {
+                                      if (!editedShiftDate) return;
+
+                                      const today = new Date();
+                                      const selectedDate = new Date(
+                                        editedShiftDate
+                                      );
+
+                                      // ✅ Calculate the day offset based on today
+                                      const newDayOffset =
+                                        differenceInDays(selectedDate, today) +
+                                        1;
+
+                                      // ✅ Save only when explicitly clicked
+                                      const updatedShifts =
+                                        member.Preferences.preferred_shifts.map(
+                                          (s, i) =>
+                                            i === index
+                                              ? { ...s, day: newDayOffset }
+                                              : s
+                                        );
+
+                                      updatePreferredShift(
+                                        member.ID,
+                                        updatedShifts
+                                      ); // ✅ Save to JSON
+                                    }}
+                                  >
+                                    Save
+                                  </button>
+                                  {/* Delete Button */}
+                                  <button
+                                    className="w-full mt-3 flex items-center justify-center gap-2 p-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                    onClick={() => {
+                                      const updatedShifts =
+                                        member.Preferences.preferred_shifts.filter(
+                                          (_, i) => i !== index
+                                        );
+
+                                      updatePreferredShift(
+                                        member.ID,
+                                        updatedShifts
+                                      ); // ✅ Remove & Save to JSON
+                                    }}
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                    <span>Delete</span>
+                                  </button>
+                                </PopoverContent>
+                              </Popover>
+                            );
+                          })}
+                      </div>
                     </div>
                   )}
 
                   {/* Preferred Days Off - Aligned Next to Preferred Shifts */}
-                  {filteredDaysOff.length > 0 && (
-                    <div className="w-1/3 flex flex-col items-end">
-                      <h3 className="text-xl font-semibold mb-2">
-                        Preferred Days Off
-                      </h3>
-                      <div className="flex flex-col gap-2">
-                        {filteredDaysOff.map(([day, priority]) => {
-                          const label = getPriorityLabel(priority);
-                          if (!label) return null; // Hide if 0
-                          return (
-                            <Tooltip key={day}>
-                              <TooltipTrigger>
-                                <span
-                                  className={`px-2 py-1 rounded-md text-md font-medium ${
-                                    priority === 3
-                                      ? "bg-red-300 text-black" // High Priority
-                                      : priority === 2
-                                      ? "bg-yellow-200 text-black" // Medium Priority
-                                      : priority === 1
-                                      ? "bg-yellow-200 text-black" // Low Priority
-                                      : "hidden" // Hide if priority is 0
-                                  }`}
-                                >
-                                  {day}
-                                  {/* Show only 'Mon', 'Tue', etc. */}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{label} Priority</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          );
-                        })}
+                  {/* Preferred Days Off - Uses Popovers */}
+                  {member.Preferences.preferred_days_off.length > 0 && (
+                    <div className="w-2/5 pl-4">
+                      <div className="flex items-center gap-2 justify-center mb-4">
+                        <h3 className="text-2xl font-semibold">
+                          Preferred Days Off
+                        </h3>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="p-1 bg-gray-400 text-white rounded-sm hover:bg-gray-500">
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="p-4 bg-white shadow-lg rounded-lg">
+                            <h4 className="text-lg font-semibold text-center mb-2">
+                              Add Preferred Day Off
+                            </h4>
+
+                            {/* Priority Selector */}
+                            <Select
+                              value={String(newDayOffWeight)}
+                              onValueChange={(value) =>
+                                setNewDayOffWeight(Number(value))
+                              }
+                            >
+                              <SelectTrigger className="w-full mt-2">
+                                <SelectValue placeholder="Select Priority" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="10">Low</SelectItem>
+                                <SelectItem value="25">Medium</SelectItem>
+                                <SelectItem value="40">High</SelectItem>
+                              </SelectContent>
+                            </Select>
+
+                            {/* Calendar for selecting a date */}
+                            <Calendar
+                              mode="single"
+                              selected={newDayOffDate} // ✅ Store the raw selected date
+                              onSelect={(date) => setNewDayOffDate(date)} // ✅ No normalization
+                              className="mt-3 border rounded-md shadow-md"
+                            />
+
+                            {/* Save Button */}
+                            <button
+                              className="w-full mt-3 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              onClick={() => {
+                                if (!newDayOffDate) return;
+
+                                const today = new Date();
+                                const selectedDate = new Date(newDayOffDate);
+
+                                // ✅ Calculate the day offset based on today
+                                const newDayOffset =
+                                  differenceInDays(selectedDate, today) + 1;
+
+                                const updatedDaysOff = [
+                                  ...member.Preferences.preferred_days_off,
+                                  {
+                                    day: newDayOffset,
+                                    weight: newDayOffWeight,
+                                  },
+                                ];
+
+                                updatePreferredDayOff(
+                                  member.ID,
+                                  updatedDaysOff
+                                ); // ✅ Save to JSON
+                              }}
+                            >
+                              Add Day Off Preference
+                            </button>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      <div className="flex flex-col space-y-3">
+                        {member.Preferences.preferred_days_off
+                          .filter((dayOff) => dayOff.weight > 0) // ✅ Only show days with priority
+                          .map((dayOff, index) => {
+                            const today = new Date();
+                            const offDate = new Date();
+                            offDate.setDate(today.getDate() + dayOff.day); // ✅ Convert "day" to real date
+
+                            // ✅ Categorize priority into Low, Medium, High
+                            let priorityLabel = "Low";
+                            let priorityBorder = "border-green-600"; // ✅ Strong border color
+                            let priorityBackground = "bg-green-50"; // ✅ Lighter background
+
+                            if (dayOff.weight > 33) {
+                              priorityLabel = "High";
+                              priorityBorder = "border-red-600";
+                              priorityBackground = "bg-red-50";
+                            } else if (dayOff.weight > 16) {
+                              priorityLabel = "Medium";
+                              priorityBorder = "border-orange-500";
+                              priorityBackground = "bg-orange-50";
+                            }
+
+                            return (
+                              <Popover key={index}>
+                                <PopoverTrigger asChild>
+                                  <button
+                                    className={`p-3 rounded-lg border-2 w-full flex items-center relative ${priorityBorder} ${priorityBackground}`}
+                                  >
+                                    {/* Date aligned to the left */}
+                                    <div className="text-left text-lg font-bold">
+                                      {format(offDate, "EEE, MMM d")}
+                                    </div>
+
+                                    {/* Priority text aligned to the right with extra spacing */}
+                                    <div className="ml-auto text-lg font-bold">
+                                      Priority: {priorityLabel}
+                                    </div>
+                                  </button>
+                                </PopoverTrigger>
+
+                                <PopoverContent className="p-4 bg-white shadow-lg rounded-lg">
+                                  <h4 className="text-lg font-semibold text-center mb-2">
+                                    Edit Preferred Day Off
+                                  </h4>
+
+                                  {/* Priority Selector */}
+                                  <Select
+                                    value={String(dayOff.weight)}
+                                    onValueChange={(value) => {
+                                      const updatedWeight = Number(value);
+                                      const updatedDaysOff =
+                                        member.Preferences.preferred_days_off.map(
+                                          (d, i) =>
+                                            i === index
+                                              ? { ...d, weight: updatedWeight }
+                                              : d
+                                        );
+
+                                      updatePreferredDayOff(
+                                        member.ID,
+                                        updatedDaysOff
+                                      ); // ✅ Save to JSON
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select Priority" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                        <SelectLabel>Priority</SelectLabel>
+                                        <SelectItem value="10">Low</SelectItem>
+                                        <SelectItem value="25">
+                                          Medium
+                                        </SelectItem>
+                                        <SelectItem value="40">High</SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+
+                                  {/* Calendar for Date Selection */}
+                                  <Calendar
+                                    mode="single"
+                                    selected={newDayOffDate} // ✅ Store the raw selected date
+                                    onSelect={(date) => setNewDayOffDate(date)} // ✅ No normalization, just store raw date
+                                    className="mt-3 border rounded-md shadow-md"
+                                  />
+
+                                  {/* Save Button */}
+                                  <button
+                                    className="w-full mt-3 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                    onClick={() => {
+                                      if (!newDayOffDate) return;
+
+                                      const today = new Date();
+                                      const selectedDate = new Date(
+                                        newDayOffDate
+                                      );
+
+                                      // ✅ Calculate the day offset based on today
+                                      const newDayOffset =
+                                        differenceInDays(selectedDate, today) +
+                                        1;
+
+                                      // ✅ Save only when explicitly clicked
+                                      const updatedDaysOff =
+                                        member.Preferences.preferred_days_off.map(
+                                          (d, i) =>
+                                            i === index
+                                              ? { ...d, day: newDayOffset }
+                                              : d
+                                        );
+
+                                      updatePreferredDayOff(
+                                        member.ID,
+                                        updatedDaysOff
+                                      ); // ✅ Save to JSON
+                                    }}
+                                  >
+                                    Save
+                                  </button>
+
+                                  {/* Delete Button */}
+                                  <button
+                                    className="w-full mt-3 flex items-center justify-center gap-2 p-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                    onClick={() => {
+                                      const updatedDaysOff =
+                                        member.Preferences.preferred_days_off.filter(
+                                          (_, i) => i !== index
+                                        );
+
+                                      updatePreferredDayOff(
+                                        member.ID,
+                                        updatedDaysOff
+                                      ); // ✅ Remove & Save to JSON
+                                    }}
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                    <span>Delete</span>
+                                  </button>
+                                </PopoverContent>
+                              </Popover>
+                            );
+                          })}
                       </div>
                     </div>
                   )}
@@ -690,8 +951,8 @@ export default function StaffPage() {
                       {Array.from({ length: 7 }).map((_, index) => {
                         const currentDate = addDays(selectedDate, index);
                         const formattedDate = format(currentDate, "yyyy-MM-dd");
-                        const shift = member.schedule[formattedDate];
-
+                        const shift =
+                          (member.schedule ?? {})[formattedDate] || "No Shift";
                         return (
                           <div key={index}>
                             {shift ? (

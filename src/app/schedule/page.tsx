@@ -1,24 +1,93 @@
 "use client";
 // @ts-ignore
 import domToImage from "dom-to-image-more";
-import { Download } from "lucide-react"; // Import Download icon
-import Image from "next/image";
+import { Download, CalendarCog } from "lucide-react"; // Import Download icon
 import React, { useState, useRef, useEffect } from "react"; // 🟢 Add `useRef`
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DateNavigation from "@/components/ui/DateNavigation";
 import { format, addDays } from "date-fns";
-import { useStaff } from "@/app/context/StaffContext"; // ✅ Import global staff data
+import { useStaff, StaffMember } from "@/context/StaffContext";
+
 
 export default function SchedulePage() {
-  const { staffData } = useStaff(); // ✅ Access global staff data dynamically
+  const { staffData, setStaffData } = useStaff();
   const [updatedStaff, setUpdatedStaff] = useState(staffData);
-
   useEffect(() => {
     setUpdatedStaff(staffData); // ✅ Reacts to changes
   }, [staffData]);
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const scheduleRef = useRef<HTMLDivElement>(null); // 🟢 Reference for the schedule grid
   const [date, setDate] = useState<Date>(new Date());
+
+  const handleGenerateSchedule = async () => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+        // ✅ Step 1: Generate the new schedule
+        const response = await fetch("/api/generateSchedule", { method: "POST" });
+
+        if (!response.ok) {
+            throw new Error("Failed to generate schedule.");
+        }
+
+        // ✅ Step 2: Wait until `schedules.json` is updated
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2s before fetching
+
+        let schedulesJson;
+        let retries = 5;
+        while (retries > 0) {
+            const schedulesResponse = await fetch("/api/getSchedules");
+            schedulesJson = await schedulesResponse.json();
+            if (Object.keys(schedulesJson).length > 0) break; // ✅ Stop retrying if data is found
+            retries--;
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s before retrying
+        }
+
+        if (!schedulesJson) {
+            throw new Error("Failed to fetch updated schedules.");
+        }
+
+        // ✅ Step 3: Fetch latest staff data
+        const staffResponse = await fetch("/api/getStaff");
+        const staffJson = await staffResponse.json();
+
+        // ✅ Step 4: Merge updated schedules into staff data
+        const updatedStaff = staffJson.staff.map((staff: StaffMember) => ({
+            ...staff,
+            schedule: schedulesJson[staff.ID] || {}, // ✅ Assign new schedule if exists
+        }));
+
+        // ✅ Step 5: Update UI immediately
+        setStaffData(updatedStaff);
+
+        // ✅ Step 6: Persist updated staff list
+        const responseSave = await fetch("/api/updateStaff", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedStaff),
+        });
+
+        if (!responseSave.ok) {
+            throw new Error("Failed to save updated staff data.");
+        }
+
+        setSuccess(true);
+    } catch (err) {
+        console.error("Error:", err);
+        setError("An error occurred while generating the schedule.");
+    } finally {
+        setLoading(false);
+    }
+};
+
+
   const handleSaveSchedule = async () => {
     if (!scheduleRef.current) return;
 
@@ -65,14 +134,27 @@ export default function SchedulePage() {
           <DateNavigation date={date} setDate={setDate} />
         </div>
 
-        {/* Save Button on the Far Right */}
-        <button
-          onClick={handleSaveSchedule}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center gap-2 ml-auto mt-5"
-        >
-          <Download className="w-5 h-5" />
-          Save
-        </button>
+        {/* Right-aligned buttons container */}
+        <div className="flex gap-4 mt-5">
+          {/* Generate Schedule Button */}
+          <button
+            onClick={handleGenerateSchedule} // ✅ Calls the function properly
+            disabled={loading}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2"
+          >
+            <CalendarCog className="w-5 h-5" />
+            {loading ? "Generating..." : "Generate Schedule"}
+          </button>
+
+          {/* Save Button */}
+          <button
+            onClick={handleSaveSchedule}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center gap-2"
+          >
+            <Download className="w-5 h-5" />
+            Save
+          </button>
+        </div>
       </div>
 
       <div className="mb-8"></div>
@@ -119,23 +201,21 @@ export default function SchedulePage() {
               <div className="p-4 border border-gray-300 text-left bg-gray-50 flex items-center space-x-3">
                 <Avatar>
                   <AvatarImage
-                    src={`/headshots/${person.id}.jpeg`} // ✅ Uses only staff ID for images
+                    src={`/headshots/${person.ID}.jpeg`} // ✅ Uses only staff ID for images
                     onError={(e) =>
                       (e.currentTarget.src = "/headshots/default.jpeg")
                     }
-                    alt={person.name}
+                    alt={person.Name}
                   />
-                  <AvatarFallback>{person.name[0]}</AvatarFallback>
+                  <AvatarFallback>{person.Name[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col leading-tight">
-                  {" "}
-                  {/* 🟢 Fix misalignment */}
                   <p className="font-semibold text-lg border border-gray-50">
-                    {person.name}
-                  </p>{" "}
-                  {/* 🟢 Border used to fix image saving */}
+                    {person.Name}
+                  </p>
                   <p className="text-sm text-gray-500 border border-gray-50">
-                    {person.seniority}
+                    {person.Seniority.charAt(0).toUpperCase() +
+                      person.Seniority.slice(1)}
                   </p>
                 </div>
               </div>
@@ -144,14 +224,16 @@ export default function SchedulePage() {
               {Array.from({ length: 7 }).map((_, colIndex) => {
                 const currentDate = addDays(date, colIndex);
                 const formattedDate = format(currentDate, "yyyy-MM-dd");
-                const shift = person.schedule[formattedDate];
+
+                // 🔹 Ensure `schedule` exists in each staff member
+                const shift = person.schedule?.[formattedDate] ?? "No Shift";
 
                 return (
                   <div
                     key={`shift-${rowIndex}-${colIndex}`}
                     className="relative p-4 border border-gray-300 min-h-[100px] flex items-center justify-center"
                   >
-                    {shift && (
+                    {shift !== "No Shift" ? (
                       <div
                         className={`w-full text-center py-3 text-lg rounded-md ${
                           shift.includes("7 AM - 3 PM")
@@ -163,9 +245,10 @@ export default function SchedulePage() {
                             : "bg-gray-200"
                         }`}
                       >
-                        {" "}
                         {shift}
                       </div>
+                    ) : (
+                      <span className="text-gray-400">No Shift</span>
                     )}
                   </div>
                 );
