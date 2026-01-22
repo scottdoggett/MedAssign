@@ -1,5 +1,5 @@
 "use client";
-// @ts-ignore
+// @ts-expect-error - dom-to-image-more lacks TypeScript definitions
 import domToImage from "dom-to-image-more";
 import { Download, CalendarCog } from "lucide-react"; // Import Download icon
 import React, { useState, useRef, useEffect } from "react"; // Add `useRef`
@@ -17,15 +17,11 @@ export default function SchedulePage() {
   }, [staffData]);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const scheduleRef = useRef<HTMLDivElement>(null); // Reference for the schedule grid
   const [date, setDate] = useState<Date>(new Date());
 
   const handleGenerateSchedule = async () => {
     setLoading(true);
-    setError(null);
-    setSuccess(false);
 
     try {
         // Generate the new schedule
@@ -35,25 +31,38 @@ export default function SchedulePage() {
             throw new Error("Failed to generate schedule.");
         }
 
-        // Wait until `schedules.json` is updated
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2s before fetching
-
+        // Wait until `schedules.json` is updated with exponential backoff
         let schedulesJson;
         let retries = 5;
+        let delay = 1000; // Start with 1 second
+
         while (retries > 0) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+
             const schedulesResponse = await fetch("/api/getSchedules");
+            if (!schedulesResponse.ok) {
+                console.error("Failed to fetch schedules, retrying...");
+                retries--;
+                delay *= 1.5; // Exponential backoff
+                continue;
+            }
+
             schedulesJson = await schedulesResponse.json();
-            if (Object.keys(schedulesJson).length > 0) break; // Stop retrying if data is found
+            if (schedulesJson && Object.keys(schedulesJson).length > 0) break;
+
             retries--;
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s before retrying
+            delay *= 1.5; // Exponential backoff
         }
 
-        if (!schedulesJson) {
+        if (!schedulesJson || Object.keys(schedulesJson).length === 0) {
             throw new Error("Failed to fetch updated schedules.");
         }
 
         // Fetch latest staff data
         const staffResponse = await fetch("/api/getStaff");
+        if (!staffResponse.ok) {
+            throw new Error("Failed to fetch staff data.");
+        }
         const staffJson = await staffResponse.json();
 
         // Merge updated schedules into staff data
@@ -78,10 +87,8 @@ export default function SchedulePage() {
             throw new Error("Failed to save updated staff data.");
         }
 
-        setSuccess(true);
     } catch (err) {
         console.error("Error:", err);
-        setError("An error occurred while generating the schedule.");
     } finally {
         setLoading(false);
     }

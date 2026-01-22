@@ -1,11 +1,7 @@
 "use client";
 
 import { useStaff, StaffMember } from "@/context/StaffContext";
-import { DialogTitle } from "@/components/ui/dialog"; // Import DialogTitle
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import React, { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React, { useState } from "react";
 import EditableAvatar from "@/components/ui/EditableAvatar"; // Import EditableAvatar
 import { Trash2, Plus } from "lucide-react"; // Import the trash icon
 import {
@@ -18,22 +14,8 @@ import {
   SelectGroup,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import DateNavigation from "@/components/ui/DateNavigation";
-import { format, addDays, differenceInDays, startOfWeek } from "date-fns";
+import { format, addDays, differenceInDays } from "date-fns";
 import {
   Popover,
   PopoverTrigger,
@@ -57,29 +39,12 @@ export default function StaffPage() {
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date()); //  Start at today
 
-  const getPriorityLabel = (priority: number): string | null => {
-    if (priority === 1) return "Low";
-    if (priority === 2) return "Medium";
-    if (priority === 3) return "High";
-    return null; // Hide 0 values
-  };
-
-  const getDayOffColor = (priority: number): string => {
-    if (priority >= 5) return "bg-red-500 text-white"; // High Priority (Red)
-    if (priority >= 3) return "bg-yellow-300 text-black"; // Medium Priority (Yellow)
-    return "bg-green-500 text-white"; // Low Priority (Green)
-  };
-
   const getShiftColor = (shift: string): string => {
     if (shift.includes("7 AM - 3 PM")) return "bg-blue-500 text-white"; // Morning Shift
     if (shift.includes("3 PM - 1 AM")) return "bg-yellow-500 text-white"; // Afternoon Shift
     if (shift.includes("1 AM - 7 AM")) return "bg-purple-500 text-white"; // Night Shift
     return "bg-gray-200"; // Default gray for unknown shifts
   };
-
-  const [selectedMember, setSelectedMember] = useState<StaffMember | null>(
-    null
-  );
 
   const updateStaffSeniority = async (
     memberID: number,
@@ -218,41 +183,6 @@ export default function StaffPage() {
     }
   };
 
-  const updateStaffMember = async (updatedMember: StaffMember) => {
-    // Update state immediately for UI responsiveness
-    setStaffData((prevStaff) =>
-      prevStaff.map((staff) =>
-        staff.ID === updatedMember.ID ? updatedMember : staff
-      )
-    );
-
-    // Send updated member to backend to save in JSON
-    try {
-      const response = await fetch("/api/updateStaff", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedMember),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save staff data.");
-      }
-    } catch (error) {
-      console.error("Error updating staff data:", error);
-    }
-  };
-
-  const handleSaveChanges = (updatedMember: StaffMember) => {
-    setStaffData((prevStaff) =>
-      prevStaff.map((staff) =>
-        staff.ID === updatedMember.ID ? updatedMember : staff
-      )
-    );
-    setSelectedMember(null);
-  };
-
   return (
     <div className="p-6 max-w-[1000px] mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -350,13 +280,6 @@ export default function StaffPage() {
             return true;
           })
           .map((member: StaffMember) => {
-            const filteredDaysOff = member.Preferences.preferred_days_off
-              .filter((dayOff) => dayOff.weight > 0) // Only keep days with weight > 0
-              .map((dayOff) => ({
-                date: format(addDays(new Date(), dayOff.day), "yyyy-MM-dd"), // Convert day offset to real date
-                weight: dayOff.weight, // Keep weight value
-              }));
-
             return (
               <div
                 key={member.ID}

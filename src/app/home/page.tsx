@@ -86,7 +86,7 @@ export default function HomePage() {
             </AccordionTrigger>
             <AccordionContent className="text-lg">
             MedAssign uses a sophisticated, two-stage approach. 
-            First, it leverages the optimization capabilities of Google's OR-Tools 
+            First, it leverages the optimization capabilities of Google&aposs OR-Tools 
             to solve hard scheduling constraints, ensuring all mandatory requirements are met. 
             Then, it employs a Taboo Search algorithm to optimize soft constraints, such as staff 
             preferences and fairness considerations, resulting in a balanced and efficient schedule.
