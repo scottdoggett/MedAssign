@@ -27,12 +27,12 @@
     {
       "ID": 1,
       "Name": "Andria Goia",
-      "Seniority": "senior",
+      "Seniority": "junior",
       "Preferences": {
         "preferred_shifts": [
           {
             "day": 2,
-            "shift": "M",
+            "shift": "N",
             "weight": 25
           },
           {
@@ -43,20 +43,20 @@
         ],
         "preferred_days_off": [
           {
-            "day": 1,
-            "weight": 25
+            "day": 7,
+            "weight": 10
           },
           {
             "day": 6,
-            "weight": 10
+            "weight": 40
           }
         ]
       }
     },
     {
       "ID": 2,
-      "Name": "Jennifer Muller",
-      "Seniority": "junior",
+      "Name": "Jennifer Smith",
+      "Seniority": "senior",
       "Preferences": {
         "preferred_shifts": [
           {

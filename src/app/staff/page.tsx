@@ -1,12 +1,12 @@
 "use client";
 
 import { useStaff, StaffMember } from "@/context/StaffContext";
-import { DialogTitle } from "@/components/ui/dialog"; // ✅ Import DialogTitle
+import { DialogTitle } from "@/components/ui/dialog"; // Import DialogTitle
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import EditableAvatar from "@/components/ui/EditableAvatar"; // ✅ Import EditableAvatar
+import EditableAvatar from "@/components/ui/EditableAvatar"; // Import EditableAvatar
 import { Trash2, Plus } from "lucide-react"; // Import the trash icon
 import {
   Select,
@@ -55,7 +55,7 @@ export default function StaffPage() {
   const [seniorityFilter, setSeniorityFilter] = useState<string>("All");
   const [shiftFilter, setShiftFilter] = useState<string>("All");
 
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // ✅ Start at today
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date()); //  Start at today
 
   const getPriorityLabel = (priority: number): string | null => {
     if (priority === 1) return "Low";
@@ -85,24 +85,24 @@ export default function StaffPage() {
     memberID: number,
     newSeniority: "junior" | "senior"
   ) => {
-    // ✅ Create an updated staff list
+    // Create an updated staff list
     const updatedStaff = staffData.map((staff) =>
       staff.ID === memberID
-        ? { ...staff, Seniority: newSeniority } // ✅ Only update Seniority
+        ? { ...staff, Seniority: newSeniority } // Only update Seniority
         : staff
     );
 
-    // ✅ Update UI immediately
+    // Update UI immediately
     setStaffData(updatedStaff);
 
-    // ✅ Send full updated staff list to persist changes
+    // Send full updated staff list
     try {
       const response = await fetch("/api/updateStaff", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+        body: JSON.stringify(updatedStaff),
       });
 
       if (!response.ok) {
@@ -117,7 +117,7 @@ export default function StaffPage() {
     // Create an updated staff list with the new name
     const updatedStaff = staffData.map((staff) =>
       staff.ID === memberID
-        ? { ...staff, Name: newName } // ✅ Only update the Name field
+        ? { ...staff, Name: newName } // Only update the Name field
         : staff
     );
 
@@ -131,7 +131,7 @@ export default function StaffPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+        body: JSON.stringify(updatedStaff), // Send full updated staff list
       });
 
       if (!response.ok) {
@@ -153,7 +153,7 @@ export default function StaffPage() {
             ...staff,
             Preferences: {
               ...staff.Preferences,
-              preferred_shifts: updatedShifts, // ✅ Correctly update only this member's preferred shifts
+              preferred_shifts: updatedShifts, // Correctly update only this member's preferred shifts
             },
           }
         : staff
@@ -169,7 +169,7 @@ export default function StaffPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+        body: JSON.stringify(updatedStaff), // Send full updated staff list
       });
 
       if (!response.ok) {
@@ -191,7 +191,7 @@ export default function StaffPage() {
             ...staff,
             Preferences: {
               ...staff.Preferences,
-              preferred_days_off: updatedDaysOff, // ✅ Correctly update only this member's preferences
+              preferred_days_off: updatedDaysOff, // Correctly update only this member's preferences
             },
           }
         : staff
@@ -207,7 +207,7 @@ export default function StaffPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedStaff), // ✅ Send full updated staff list
+        body: JSON.stringify(updatedStaff), // Send full updated staff list
       });
 
       if (!response.ok) {
@@ -326,20 +326,20 @@ export default function StaffPage() {
       <div className="space-y-8">
         {staffData
           .map((member) => {
-            // ✅ Fetch the most up-to-date member data
+            // Fetch the most up-to-date member data
             const updatedMember =
               staffData.find((m) => m.ID === member.ID) || member;
             return updatedMember;
           })
           .filter((member) => {
-            // ✅ Seniority Filter
+            // Seniority Filter
             if (
               seniorityFilter !== "All" &&
               member.Seniority !== seniorityFilter
             )
               return false;
 
-            // ✅ Shift Filter
+            // Shift Filter
             if (
               shiftFilter &&
               shiftFilter !== "All" &&
@@ -351,7 +351,7 @@ export default function StaffPage() {
           })
           .map((member: StaffMember) => {
             const filteredDaysOff = member.Preferences.preferred_days_off
-              .filter((dayOff) => dayOff.weight > 0) // ✅ Only keep days with weight > 0
+              .filter((dayOff) => dayOff.weight > 0) // Only keep days with weight > 0
               .map((dayOff) => ({
                 date: format(addDays(new Date(), dayOff.day), "yyyy-MM-dd"), // Convert day offset to real date
                 weight: dayOff.weight, // Keep weight value
@@ -383,14 +383,14 @@ export default function StaffPage() {
                           );
                         }}
                         onBlur={(e) => {
-                          updateStaffName(member.ID, e.target.value); // ✅ Save to JSON on blur
+                          updateStaffName(member.ID, e.target.value); // Save to JSON on blur
                         }}
                       />
                       <Select
                         value={member.Seniority}
                         onValueChange={(value) => {
-                          const newSeniority = value as "junior" | "senior"; // ✅ Explicitly cast value
-                          updateStaffSeniority(member.ID, newSeniority); // ✅ Update immediately
+                          const newSeniority = value as "junior" | "senior"; // Explicitly cast value
+                          updateStaffSeniority(member.ID, newSeniority); // Update immediately
                         }}
                       >
                         <SelectTrigger className="w-fit bg-transparent ml-[-12px] border-none shadow-none text-xl text-gray-500 focus:ring-0 focus:outline-none">
@@ -461,8 +461,8 @@ export default function StaffPage() {
                             {/* Calendar */}
                             <Calendar
                               mode="single"
-                              selected={newShiftDate} // ✅ Store raw selected date
-                              onSelect={(date) => setNewShiftDate(date)} // ✅ No normalization
+                              selected={newShiftDate} // Store raw selected date
+                              onSelect={(date) => setNewShiftDate(date)} // No normalization
                               className="mt-3 border rounded-md shadow-md"
                             />
 
@@ -475,11 +475,11 @@ export default function StaffPage() {
                                 const today = new Date();
                                 const selectedDate = new Date(newShiftDate);
 
-                                // ✅ Calculate the day offset based on today
+                                // Calculate the day offset based on today
                                 const newDayOffset =
                                   differenceInDays(selectedDate, today) + 1;
 
-                                // ✅ Save only when explicitly clicked
+                                // Save only when explicitly clicked
                                 const updatedShifts = [
                                   ...member.Preferences.preferred_shifts,
                                   {
@@ -489,7 +489,7 @@ export default function StaffPage() {
                                   },
                                 ];
 
-                                updatePreferredShift(member.ID, updatedShifts); // ✅ Save to JSON
+                                updatePreferredShift(member.ID, updatedShifts); // Save to JSON
                               }}
                             >
                               Add Shift Preference
@@ -500,13 +500,13 @@ export default function StaffPage() {
 
                       <div className="flex flex-col space-y-3">
                         {member.Preferences.preferred_shifts
-                          .filter((shift) => shift.weight > 0) // ✅ Only show shifts with priority
+                          .filter((shift) => shift.weight > 0) // Only show shifts with priority
                           .map((shift, index) => {
                             const today = new Date();
                             const shiftDate = new Date();
-                            shiftDate.setDate(today.getDate() + shift.day); // ✅ Convert "day" to real date
+                            shiftDate.setDate(today.getDate() + shift.day); // Convert "day" to real date
 
-                            // ✅ Convert shift value (M, A, N) into corresponding time
+                            // Convert shift value (M, A, N) into corresponding time
                             const shiftTimes: Record<string, string> = {
                               M: "7 AM - 3 PM",
                               A: "3 PM - 1 AM",
@@ -516,10 +516,10 @@ export default function StaffPage() {
                             const shiftTime =
                               shiftTimes[shift.shift] || "Unknown Shift";
 
-                            // ✅ Categorize priority into Low, Medium, High
+                            // Categorize priority into Low, Medium, High
                             let priorityLabel = "Low";
-                            let priorityBorder = "border-green-600"; // ✅ Strong border color
-                            let priorityBackground = "bg-green-50"; // ✅ Lighter background
+                            let priorityBorder = "border-green-600"; // Strong border color
+                            let priorityBackground = "bg-green-50"; // Lighter background
 
                             if (shift.weight > 33) {
                               priorityLabel = "High";
@@ -573,7 +573,7 @@ export default function StaffPage() {
                                       updatePreferredShift(
                                         member.ID,
                                         updatedShifts
-                                      ); // ✅ Save to JSON
+                                      ); // Save to JSON
                                     }}
                                   >
                                     <SelectTrigger className="w-full">
@@ -610,7 +610,7 @@ export default function StaffPage() {
                                       updatePreferredShift(
                                         member.ID,
                                         updatedShifts
-                                      ); // ✅ Save to JSON
+                                      ); // Save to JSON
                                     }}
                                   >
                                     <SelectTrigger className="w-full mt-2">
@@ -632,10 +632,10 @@ export default function StaffPage() {
                                   {/* Calendar for Date Selection */}
                                   <Calendar
                                     mode="single"
-                                    selected={editedShiftDate || shiftDate} // ✅ Default to existing shift date
+                                    selected={editedShiftDate || shiftDate} // Default to existing shift date
                                     onSelect={(date) =>
                                       setEditedShiftDate(date)
-                                    } // ✅ No normalization, just store the selected date
+                                    } // No normalization, just store the selected date
                                     className="mt-3 border rounded-md shadow-md"
                                   />
                                   {/* Save Button */}
@@ -649,12 +649,12 @@ export default function StaffPage() {
                                         editedShiftDate
                                       );
 
-                                      // ✅ Calculate the day offset based on today
+                                      // Calculate the day offset based on today
                                       const newDayOffset =
                                         differenceInDays(selectedDate, today) +
                                         1;
 
-                                      // ✅ Save only when explicitly clicked
+                                      // Save only when explicitly clicked
                                       const updatedShifts =
                                         member.Preferences.preferred_shifts.map(
                                           (s, i) =>
@@ -666,7 +666,7 @@ export default function StaffPage() {
                                       updatePreferredShift(
                                         member.ID,
                                         updatedShifts
-                                      ); // ✅ Save to JSON
+                                      ); // Save to JSON
                                     }}
                                   >
                                     Save
@@ -683,7 +683,7 @@ export default function StaffPage() {
                                       updatePreferredShift(
                                         member.ID,
                                         updatedShifts
-                                      ); // ✅ Remove & Save to JSON
+                                      ); // Remove & Save to JSON
                                     }}
                                   >
                                     <Trash2 className="w-5 h-5" />
@@ -697,8 +697,7 @@ export default function StaffPage() {
                     </div>
                   )}
 
-                  {/* Preferred Days Off - Aligned Next to Preferred Shifts */}
-                  {/* Preferred Days Off - Uses Popovers */}
+                  {/* Preferred Days Off */}
                   {member.Preferences.preferred_days_off.length > 0 && (
                     <div className="w-2/5 pl-4">
                       <div className="flex items-center gap-2 justify-center mb-4">
@@ -736,8 +735,8 @@ export default function StaffPage() {
                             {/* Calendar for selecting a date */}
                             <Calendar
                               mode="single"
-                              selected={newDayOffDate} // ✅ Store the raw selected date
-                              onSelect={(date) => setNewDayOffDate(date)} // ✅ No normalization
+                              selected={newDayOffDate} // Store the raw selected date
+                              onSelect={(date) => setNewDayOffDate(date)}
                               className="mt-3 border rounded-md shadow-md"
                             />
 
@@ -750,7 +749,7 @@ export default function StaffPage() {
                                 const today = new Date();
                                 const selectedDate = new Date(newDayOffDate);
 
-                                // ✅ Calculate the day offset based on today
+                                // Calculate the day offset based on today
                                 const newDayOffset =
                                   differenceInDays(selectedDate, today) + 1;
 
@@ -765,7 +764,7 @@ export default function StaffPage() {
                                 updatePreferredDayOff(
                                   member.ID,
                                   updatedDaysOff
-                                ); // ✅ Save to JSON
+                                ); // Save to JSON
                               }}
                             >
                               Add Day Off Preference
@@ -776,16 +775,16 @@ export default function StaffPage() {
 
                       <div className="flex flex-col space-y-3">
                         {member.Preferences.preferred_days_off
-                          .filter((dayOff) => dayOff.weight > 0) // ✅ Only show days with priority
+                          .filter((dayOff) => dayOff.weight > 0) // Only show days with priority
                           .map((dayOff, index) => {
                             const today = new Date();
                             const offDate = new Date();
-                            offDate.setDate(today.getDate() + dayOff.day); // ✅ Convert "day" to real date
+                            offDate.setDate(today.getDate() + dayOff.day); // Convert "day" to real date
 
-                            // ✅ Categorize priority into Low, Medium, High
+                            // Categorize priority into Low, Medium, High
                             let priorityLabel = "Low";
-                            let priorityBorder = "border-green-600"; // ✅ Strong border color
-                            let priorityBackground = "bg-green-50"; // ✅ Lighter background
+                            let priorityBorder = "border-green-600"; // Strong border color
+                            let priorityBackground = "bg-green-50"; // Lighter background
 
                             if (dayOff.weight > 33) {
                               priorityLabel = "High";
@@ -836,7 +835,7 @@ export default function StaffPage() {
                                       updatePreferredDayOff(
                                         member.ID,
                                         updatedDaysOff
-                                      ); // ✅ Save to JSON
+                                      ); // Save to JSON
                                     }}
                                   >
                                     <SelectTrigger className="w-full">
@@ -857,8 +856,8 @@ export default function StaffPage() {
                                   {/* Calendar for Date Selection */}
                                   <Calendar
                                     mode="single"
-                                    selected={newDayOffDate} // ✅ Store the raw selected date
-                                    onSelect={(date) => setNewDayOffDate(date)} // ✅ No normalization, just store raw date
+                                    selected={newDayOffDate} // Store the raw selected date
+                                    onSelect={(date) => setNewDayOffDate(date)} // No normalization, just store raw date
                                     className="mt-3 border rounded-md shadow-md"
                                   />
 
@@ -873,12 +872,12 @@ export default function StaffPage() {
                                         newDayOffDate
                                       );
 
-                                      // ✅ Calculate the day offset based on today
+                                      // Calculate the day offset based on today
                                       const newDayOffset =
                                         differenceInDays(selectedDate, today) +
                                         1;
 
-                                      // ✅ Save only when explicitly clicked
+                                      // Save only when explicitly clicked
                                       const updatedDaysOff =
                                         member.Preferences.preferred_days_off.map(
                                           (d, i) =>
@@ -890,7 +889,7 @@ export default function StaffPage() {
                                       updatePreferredDayOff(
                                         member.ID,
                                         updatedDaysOff
-                                      ); // ✅ Save to JSON
+                                      ); // Save to JSON
                                     }}
                                   >
                                     Save
@@ -908,7 +907,7 @@ export default function StaffPage() {
                                       updatePreferredDayOff(
                                         member.ID,
                                         updatedDaysOff
-                                      ); // ✅ Remove & Save to JSON
+                                      ); // Remove & Save to JSON
                                     }}
                                   >
                                     <Trash2 className="w-5 h-5" />

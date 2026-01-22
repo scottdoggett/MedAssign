@@ -7,7 +7,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
-  // ✅ Read latest staff data from file
+  // Read latest staff data from file
   const staffFilePath = path.join(process.cwd(), "src/data/staff.json");
 
   if (!fs.existsSync(staffFilePath)) {
@@ -16,7 +16,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const staffData = JSON.parse(fs.readFileSync(staffFilePath, "utf-8"));
 
-  // ✅ Prevent caching
+  // Prevent caching
   res.setHeader("Cache-Control", "no-store, max-age=0");
   res.status(200).json(staffData);
 }

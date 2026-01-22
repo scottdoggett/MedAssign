@@ -2,7 +2,7 @@
 // @ts-ignore
 import domToImage from "dom-to-image-more";
 import { Download, CalendarCog } from "lucide-react"; // Import Download icon
-import React, { useState, useRef, useEffect } from "react"; // 🟢 Add `useRef`
+import React, { useState, useRef, useEffect } from "react"; // Add `useRef`
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DateNavigation from "@/components/ui/DateNavigation";
 import { format, addDays } from "date-fns";
@@ -13,13 +13,13 @@ export default function SchedulePage() {
   const { staffData, setStaffData } = useStaff();
   const [updatedStaff, setUpdatedStaff] = useState(staffData);
   useEffect(() => {
-    setUpdatedStaff(staffData); // ✅ Reacts to changes
+    setUpdatedStaff(staffData); // Reacts to changes
   }, [staffData]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const scheduleRef = useRef<HTMLDivElement>(null); // 🟢 Reference for the schedule grid
+  const scheduleRef = useRef<HTMLDivElement>(null); // Reference for the schedule grid
   const [date, setDate] = useState<Date>(new Date());
 
   const handleGenerateSchedule = async () => {
@@ -28,14 +28,14 @@ export default function SchedulePage() {
     setSuccess(false);
 
     try {
-        // ✅ Step 1: Generate the new schedule
+        // Generate the new schedule
         const response = await fetch("/api/generateSchedule", { method: "POST" });
 
         if (!response.ok) {
             throw new Error("Failed to generate schedule.");
         }
 
-        // ✅ Step 2: Wait until `schedules.json` is updated
+        // Wait until `schedules.json` is updated
         await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2s before fetching
 
         let schedulesJson;
@@ -43,7 +43,7 @@ export default function SchedulePage() {
         while (retries > 0) {
             const schedulesResponse = await fetch("/api/getSchedules");
             schedulesJson = await schedulesResponse.json();
-            if (Object.keys(schedulesJson).length > 0) break; // ✅ Stop retrying if data is found
+            if (Object.keys(schedulesJson).length > 0) break; // Stop retrying if data is found
             retries--;
             await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s before retrying
         }
@@ -52,20 +52,20 @@ export default function SchedulePage() {
             throw new Error("Failed to fetch updated schedules.");
         }
 
-        // ✅ Step 3: Fetch latest staff data
+        // Fetch latest staff data
         const staffResponse = await fetch("/api/getStaff");
         const staffJson = await staffResponse.json();
 
-        // ✅ Step 4: Merge updated schedules into staff data
+        // Merge updated schedules into staff data
         const updatedStaff = staffJson.staff.map((staff: StaffMember) => ({
             ...staff,
-            schedule: schedulesJson[staff.ID] || {}, // ✅ Assign new schedule if exists
+            schedule: schedulesJson[staff.ID] || {}, // Assign new schedule if exists
         }));
 
-        // ✅ Step 5: Update UI immediately
+        // Update UI immediately
         setStaffData(updatedStaff);
 
-        // ✅ Step 6: Persist updated staff list
+        // Persist updated staff list
         const responseSave = await fetch("/api/updateStaff", {
             method: "POST",
             headers: {
@@ -92,15 +92,15 @@ export default function SchedulePage() {
     if (!scheduleRef.current) return;
 
     try {
-      // ✅ Save original styles to restore after capturing
+      // Save original styles to restore after capturing
       const originalHeight = scheduleRef.current.style.height;
       const originalOverflow = scheduleRef.current.style.overflow;
 
-      // ✅ Expand the grid to capture the full content
+      // Expand the grid to capture the full content
       scheduleRef.current.style.height = `${scheduleRef.current.scrollHeight}px`;
       scheduleRef.current.style.overflow = "visible";
 
-      // ✅ Generate image with full content
+      // Generate image with full content
       const blob = await domToImage.toBlob(scheduleRef.current, {
         bgcolor: "#ffffff",
         quality: 1,
@@ -108,11 +108,11 @@ export default function SchedulePage() {
         height: scheduleRef.current.scrollHeight,
       });
 
-      // ✅ Restore the original styles
+      // Restore the original styles
       scheduleRef.current.style.height = originalHeight;
       scheduleRef.current.style.overflow = originalOverflow;
 
-      // ✅ Create a link and download the image
+      // Create a link and download the image
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = `Schedule_${format(date, "yyyy-MM-dd")}.png`;
@@ -127,7 +127,7 @@ export default function SchedulePage() {
       {/* Header Row with Save Button */}
       <div className="flex items-center justify-between w-full">
         {/* Title aligned to the left with whitespace-nowrap to prevent wrapping */}
-        <h1 className="text-5xl font-bold whitespace-nowrap">Schedule View</h1>
+        <h1 className="text-5xl font-bold whitespace-nowrap">Schedule</h1>
 
         {/* Centered Date Navigation */}
         <div className="absolute left-1/2 transform -translate-x-1/2 mt-5">
@@ -138,7 +138,7 @@ export default function SchedulePage() {
         <div className="flex gap-4 mt-5">
           {/* Generate Schedule Button */}
           <button
-            onClick={handleGenerateSchedule} // ✅ Calls the function properly
+            onClick={handleGenerateSchedule} // Calls the function properly
             disabled={loading}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2"
           >
@@ -166,7 +166,7 @@ export default function SchedulePage() {
       >
         {/* Grid Container */}
         <div className="grid grid-cols-[1.7fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-0 border border-gray-200">
-          {/* 🟢 Sticky Top Row (Dates) */}
+          {/* Sticky Top Row (Dates) */}
           <div className="p-4 pl-6 border border-gray-300 text-lg font-semibold bg-gray-100 flex items-center justify-start sticky top-0 z-10">
             Members
           </div>
@@ -201,7 +201,7 @@ export default function SchedulePage() {
               <div className="p-4 border border-gray-300 text-left bg-gray-50 flex items-center space-x-3">
                 <Avatar>
                   <AvatarImage
-                    src={`/headshots/${person.ID}.jpeg`} // ✅ Uses only staff ID for images
+                    src={`/headshots/${person.ID}.jpeg`} // Uses only staff ID for images
                     onError={(e) =>
                       (e.currentTarget.src = "/headshots/default.jpeg")
                     }

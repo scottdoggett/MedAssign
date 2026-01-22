@@ -7,7 +7,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
-  // ✅ Read the latest schedules from file instead of importing a static JSON
+  // Read the latest schedules from file instead of importing a static JSON
   const schedulesFilePath = path.join(process.cwd(), "src/data/schedules.json");
 
   if (!fs.existsSync(schedulesFilePath)) {
@@ -16,7 +16,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const schedulesData = JSON.parse(fs.readFileSync(schedulesFilePath, "utf-8"));
 
-  // ✅ Prevent Next.js from caching this response
+  // Prevent Next.js from caching this response
   res.setHeader("Cache-Control", "no-store, max-age=0");
   res.status(200).json(schedulesData);
 }

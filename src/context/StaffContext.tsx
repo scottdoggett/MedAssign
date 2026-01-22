@@ -15,7 +15,7 @@ export interface StaffMember {
 
 interface StaffContextType {
   staffData: StaffMember[];
-  setStaffData: React.Dispatch<React.SetStateAction<StaffMember[]>>; // ✅ Expose setStaffData
+  setStaffData: React.Dispatch<React.SetStateAction<StaffMember[]>>; // Expose setStaffData
 }
 
 const StaffContext = createContext<StaffContextType | undefined>(undefined);
@@ -36,7 +36,7 @@ export const StaffProvider = ({ children }: { children: React.ReactNode }) => {
 
         const mergedStaff = staffJson.staff.map((staff: StaffMember) => ({
           ...staff,
-          schedule: schedulesJson[staff.ID] || {}, // ✅ Ensure empty schedule if missing
+          schedule: schedulesJson[staff.ID] || {}, // Ensure empty schedule if missing
         }));
 
         setStaffData(mergedStaff);
@@ -49,7 +49,7 @@ export const StaffProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <StaffContext.Provider value={{ staffData, setStaffData }}> {/* ✅ Provide setStaffData */}
+    <StaffContext.Provider value={{ staffData, setStaffData }}> {/* Provide setStaffData */}
       {children}
     </StaffContext.Provider>
   );
